@@ -34,6 +34,22 @@
 
 ![spec_min_p sweep](./assets/spec-minp-sweep.svg)
 
+### 🆕 2026-10-17 · 引擎升级 0.1.44.1（单路 +32%）+ 并发 / KV 池实测 + 网页技能包
+
+- **引擎 v0.1.32 → v0.1.44.1**：单路中位 **83.3 → 110.3 tok/s（+32%）**——route tail skip、
+  PCIe 实测校准、短 prompt CPU 分担三个新默认叠加生效；峰值 112.9
+- **并发实测**：`--batch 3 × 256K/槽` 稳定，聚合 ~82 tok/s；**总吞吐天花板 = 内存带宽 ~76-82**，
+  多人是分流不是提速；batch4 起明显衰减
+- **KV 池极限**：4 路 × 245K = **911K token 同时在线**（RAM 余 0.4GB 触墙）；
+  KV 流式分布，实际池容量远超"全在内存"的估算
+- **MTP 复扫**：spec 4 / min-p 0.7 仍是峰值（6 变体全败，含 --batch-mtp 单卡 -30%）
+- **网页技能包**：联网搜索（Bing RSS 免 key + 查询清洗）、天气/晚霞指数（Open-Meteo 实测
+  "上海今晚有晚霞吗"给出日落窗口与云量判定）、计算器（ast 安全求值）、新闻（cn.bing 修正）、
+  汇率（方向解析修复）、股价（腾讯行情）、读网页（SSRF 防护）、语音输入、访客记忆
+- **升级坑**：连续重启会失败——旧引擎 33GB 锁页内存退出慢，**重启间隔 ≥70 秒**
+- 📘 完整实录 → [docs/2026-10-17-engine-0441-and-skills.zh.md](./docs/2026-10-17-engine-0441-and-skills.zh.md)
+
+
 ## 🤔 同一台 5090：本仓库 177B MoE vs [27B NVFP4](https://github.com/lifeidle/qwen3.8-27b-nvfp4-5090-laptop-24gb-optimal) —— 怎么选？
 
 两个仓库是同一台 RTX 5090 Laptop 24GB 上的两种使用姿势。差别不在谁更强，在**这台电脑当时扮演什么角色**：
@@ -76,7 +92,7 @@ python setup.py --family qwen --model IQ3_XXS --context 131072 --vision yes --po
 
 **⑥ 思考与并发（接入客户端前必读）**：
 - **思考默认 = xhigh（最高档）**——聊天模板出厂写死。档位体系：`xhigh`（默认）> `medium` > `low`；没有 high 档（会被自动升为 xhigh）。日常想快可传 `reasoning_effort: low`（思考变"简短直给"，出答案明显更快），复杂推理保持默认
-- **并发 = 无，FIFO 串行**：HTTP 层多线程接得住并发连接，但推理层一把 FIFO 锁——同一时刻只有一条 decode 在跑，后来的请求排队等待（不丢不拒绝，`GET /status` 可看队列）。单人使用无感；多人/多客户端同时用会依次等
+- **并发（2026-10-17 更新）**：引擎升级 0.1.44.1 后支持 `--batch N`——实测 **3 路 × 256K/槽稳定**，聚合 ~82 tok/s；**总吞吐天花板 = 内存带宽 ~76-82 tok/s**，多人是分流不是提速；KV 池实测 4 路 × 245K = 911K token 同时在线触墙。详见 [2026-10-17 实录](./docs/2026-10-17-engine-0441-and-skills.zh.md)
 - **默认 max_tokens**：客户端不传时引擎会给默认值，但思考型模型建议始终显式传 ≥600
 
 **License 与合规**：引擎 Strata 为 MIT；llama.cpp / ggml 为 MIT；模型权重 license 以各 HF 页面为准（GSQ-RCO 系列页标注 Apache-2.0，继承 base model）。本仓库只含自测数据与工具，**不再分发任何模型权重**；所有商标归各自所有者。
