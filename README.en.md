@@ -34,6 +34,24 @@
 
 ![spec_min_p sweep](./assets/spec-minp-sweep.svg)
 
+### 🆕 2026-10-17 · Engine upgraded to 0.1.44.1 (+32% single-stream) + concurrency / KV-pool measurements + web skills
+
+- **Engine v0.1.32 → v0.1.44.1**: single-stream median **83.3 → 110.3 tok/s (+32%)** — three new
+  defaults stack on this box (route tail skip, measured PCIe share, short-prompt CPU share); peak 112.9
+- **Concurrency**: `--batch 3 × 256K/slot` verified stable, aggregate ~82 tok/s; **the throughput
+  ceiling is memory bandwidth (~76-82 tok/s)** — more users split it, they do not multiply it
+- **KV pool ceiling**: 4 lanes × 245K = **911K tokens in flight simultaneously** (RAM margin 0.4 GB — the wall)
+- **MTP re-sweep**: spec 4 / min-p 0.7 remains the peak (6 variants all lose, incl. --batch-mtp at -30% on one GPU)
+- **Web skills pack**: web search (key-less Bing RSS + query cleaning), weather with a sunset-conditions
+  verdict (Open-Meteo — asked "will Shanghai have sunset glow tonight" it answers with the sunset window
+  and cloud verdict), calculator (whitelisted ast eval), headlines (cn.bing fix for China), FX rates
+  (direction parsing fixed), stock quotes (Tencent), single-page reader (SSRF-guarded), voice input,
+  per-visitor memory
+- **Upgrade gotcha**: back-to-back restarts fail — the old engine's 33 GB of pinned memory releases
+  slowly; **wait ≥70 s between restarts**
+- 📘 Full log (Chinese) → [docs/2026-10-17-engine-0441-and-skills.zh.md](./docs/2026-10-17-engine-0441-and-skills.zh.md)
+
+
 ## 🤔 Same 5090, two models: this repo (177B MoE) vs [27B NVFP4](https://github.com/lifeidle/qwen3.8-27b-nvfp4-5090-laptop-24gb-optimal) — which one?
 
 Both repos run on the same RTX 5090 Laptop 24GB. The difference is not which model is stronger — it is **what role the machine is playing**:
@@ -76,7 +94,7 @@ python setup.py --family qwen --model IQ3_XXS --context 131072 --vision yes --po
 
 **⑥ Thinking & concurrency (read before wiring up a client)**:
 - **Thinking defaults to xhigh — the highest tier**, hard-coded in the chat template. The ladder is `xhigh` (default) > `medium` > `low`; there is no "high" (it silently escalates to xhigh). For everyday speed pass `reasoning_effort: low` ("brief and straight to the point"); keep the default for hard reasoning
-- **Concurrency = none, FIFO serial**: the HTTP layer is threaded and accepts parallel connections, but one FIFO lock means a single decode at any moment — later requests queue (nothing dropped or refused; `GET /status` shows the queue). Invisible for one user; a second client waits its turn
+- **Concurrency (updated 2026-10-17)**: since the 0.1.44.1 upgrade `--batch N` works — verified **3 lanes × 256K/slot**, aggregate ~82 tok/s; **the ceiling is memory bandwidth (~76-82 tok/s)**, more users split it rather than multiply it; KV pool measured at 4 lanes × 245K = 911K tokens in flight at the wall. See the [2026-10-17 log](./docs/2026-10-17-engine-0441-and-skills.zh.md) (Chinese)
 - **max_tokens**: the engine fills a default if you omit it, but with a thinking model always pass ≥600 explicitly
 
 **License & compliance**: the Strata engine is MIT; llama.cpp / ggml are MIT; model-weight licenses follow each HF page (the GSQ-RCO pages are tagged Apache-2.0, inherited from the base model). This repo contains only our measurement data and tools — **no model weights are redistributed**; all trademarks belong to their owners.
