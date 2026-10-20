@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 620" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="620" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">IQ3_S @ 256K — decode speed by prompt / output length × MTP spec</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">5 scenarios × 3 specs · decode tok/s · 2026-10-20 · MTP draft acceptance rises with prompt length (prompt-lookup drafting)</text>
+
+  <!-- legend -->
+  <rect x="560" y="84" width="14" height="14" rx="3" fill="#1a7f37"/>
+  <text x="580" y="96" font-size="12.5" fill="#1f2328">spec 2</text>
+  <rect x="646" y="84" width="14" height="14" rx="3" fill="#539bf5"/>
+  <text x="666" y="96" font-size="12.5" fill="#1f2328">spec 3</text>
+  <rect x="732" y="84" width="14" height="14" rx="3" fill="#8b949e"/>
+  <text x="752" y="96" font-size="12.5" fill="#1f2328">spec 4</text>
+
+  <!-- scale: 0..110 tok/s maps to x 340..830 (490 px) = 4.4545 px per tok/s -->
+  <!-- group 1: 短入短出 (prompt 59, gen 200) -->
+  <text x="330" y="140" font-size="13" text-anchor="end" fill="#1f2328">short in · short out (59→200)</text>
+  <rect x="340" y="126" width="304" height="18" rx="3" fill="#1a7f37"/>
+  <text x="650" y="140" font-size="12" font-weight="700" fill="#1a7f37">68.3 · 59.1%</text>
+  <rect x="340" y="148" width="336" height="18" rx="3" fill="#539bf5"/>
+  <text x="682" y="162" font-size="12" font-weight="700" fill="#539bf5">75.5</text>
+  <rect x="340" y="170" width="225" height="18" rx="3" fill="#8b949e"/>
+  <text x="571" y="184" font-size="12" font-weight="700" fill="#57606a">50.6</text>
+
+  <!-- group 2: 短入长出 (prompt 77, gen 2000) -->
+  <text x="330" y="230" font-size="13" text-anchor="end" fill="#1f2328">short in · long out (77→2000)</text>
+  <rect x="340" y="216" width="401" height="18" rx="3" fill="#1a7f37"/>
+  <text x="747" y="230" font-size="12" font-weight="700" fill="#1a7f37">90.1 · 69.7%</text>
+  <rect x="340" y="238" width="391" height="18" rx="3" fill="#539bf5"/>
+  <text x="737" y="252" font-size="12" font-weight="700" fill="#539bf5">87.9</text>
+  <rect x="340" y="260" width="361" height="18" rx="3" fill="#8b949e"/>
+  <text x="707" y="274" font-size="12" font-weight="700" fill="#57606a">81.2</text>
+
+  <!-- group 3: 7K入短出 (prompt 6876, gen 200) -->
+  <text x="330" y="320" font-size="13" text-anchor="end" fill="#1f2328">~7K in · short out (6876→200)</text>
+  <rect x="340" y="306" width="366" height="18" rx="3" fill="#1a7f37"/>
+  <text x="712" y="320" font-size="12" font-weight="700" fill="#1a7f37">82.3 · 84.8%</text>
+  <rect x="340" y="328" width="382" height="18" rx="3" fill="#539bf5"/>
+  <text x="728" y="342" font-size="12" font-weight="700" fill="#539bf5">85.9</text>
+  <rect x="340" y="350" width="324" height="18" rx="3" fill="#8b949e"/>
+  <text x="670" y="364" font-size="12" font-weight="700" fill="#57606a">72.8</text>
+
+  <!-- group 4: 7K入长出 (prompt 6889, gen 2000) -->
+  <text x="330" y="410" font-size="13" text-anchor="end" fill="#1f2328">~7K in · long out (6889→2000)</text>
+  <rect x="340" y="396" width="421" height="18" rx="3" fill="#1a7f37"/>
+  <text x="767" y="410" font-size="12" font-weight="700" fill="#1a7f37">94.7 · 78.7%</text>
+  <rect x="340" y="418" width="370" height="18" rx="3" fill="#539bf5"/>
+  <text x="716" y="432" font-size="12" font-weight="700" fill="#539bf5">83.2</text>
+  <rect x="340" y="440" width="366" height="18" rx="3" fill="#8b949e"/>
+  <text x="712" y="454" font-size="12" font-weight="700" fill="#57606a">82.3</text>
+
+  <!-- group 5: 20K入短出 (prompt 20407, gen 200) -->
+  <text x="330" y="500" font-size="13" text-anchor="end" fill="#1f2328">~20K in · short out (20407→200)</text>
+  <rect x="340" y="486" width="381" height="18" rx="3" fill="#1a7f37"/>
+  <text x="727" y="500" font-size="12" font-weight="700" fill="#1a7f37">85.6 · 75.3%</text>
+  <rect x="340" y="508" width="343" height="18" rx="3" fill="#539bf5"/>
+  <text x="689" y="522" font-size="12" font-weight="700" fill="#539bf5">77.1</text>
+  <rect x="340" y="530" width="317" height="18" rx="3" fill="#8b949e"/>
+  <text x="663" y="544" font-size="12" font-weight="700" fill="#57606a">71.3</text>
+
+  <rect x="28" y="564" width="824" height="1" fill="#d0d7de"/>
+  <text x="28" y="588" font-size="13" fill="#1f2328" font-weight="700">Takeaway: spec 2 wins nearly everywhere — and MTP acceptance RISES with prompt length</text>
+  <text x="28" y="606" font-size="13" fill="#57606a">(spec 2: 59% short-in → 85% at ~7K prompt). Long-context work (your project docs) gets the biggest MTP boost. Prefill: 2700-2820 tok/s on long inputs, no watchdog events.</text>
+</svg>
