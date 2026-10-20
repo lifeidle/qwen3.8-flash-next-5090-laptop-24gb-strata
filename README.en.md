@@ -1,6 +1,6 @@
 # Qwen3.8-Flash-Next 177B on an RTX 5090 Laptop
 
-**24 GB VRAM + 64 GB RAM · 256K Context · 110 tok/s peak · 100+ sustained · Vision Enabled**
+**24 GB VRAM + 64 GB RAM · 256K Context · 110 tok/s peak · now running IQ3_S (matches full-model quality) · Vision Enabled**
 
 [中文 →](./README.md) ｜ **English**
 
@@ -9,9 +9,31 @@
 ![RAM](https://img.shields.io/badge/RAM-64%20GB-0969da?style=flat-square)
 ![Context](https://img.shields.io/badge/context-256K%20full-2ea44f?style=flat-square)
 ![Speed](https://img.shields.io/badge/speed-up%20to%20110%20tok%2Fs-8250df?style=flat-square)
-![Quant](https://img.shields.io/badge/quant-IQ3_XXS-bf8700?style=flat-square)
+![Quant](https://img.shields.io/badge/quant-IQ3_S_3.44bpw-1a7f37?style=flat-square)
 ![Vision](https://img.shields.io/badge/vision-enabled-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+
+---
+
+## 🏆 Active config (updated 2026-10-20): IQ3_S — the highest-precision tier, proven today
+
+![Five-quant lineup](./assets/quant-comparison-2026.svg)
+
+**IQ3_S (3.44 bpw) passed on-machine verification today**: it matches the full BF16 model on
+published tests, runs the full 256K context, and decodes at 97.7 tok/s (MTP spec 2).
+One-line trade vs IQ3_XXS: **IQ3_S wins quality; IQ3_XXS wins speed and concurrency headroom**.
+
+| | IQ3_S (active · precision-first) | IQ3_XXS (backup · speed/concurrency-first) |
+|---|---|---|
+| Quality | **matches the full BF16 model** | excellent 3-bit |
+| Single-stream | 97.7 tok/s | **110.3 tok/s** |
+| Context | 256K (6.1 GB RAM margin — tight) | 256K (comfortable ~14 GB) |
+| Concurrency | batch2 → 2×128K (engine guard downgrade) | **batch3 × 256K (82 tok/s aggregate)** |
+| RAM locked | 46.84 GB (tight) | 40 GB (comfortable) |
+| **Pick it for** | **long-project precision work, hard reasoning** | **multi-user long docs, concurrent agents** |
+
+> 📊 All-quants comparison: [the card chart above](./assets/quant-comparison-2026.svg) · [memory decision guide](./assets/quant-decision-guide.svg)
+> 📘 Today's log: [IQ3_S verified](./docs/2026-10-20-iq3s-verified.zh.md) (Chinese) · [engine 0.1.44.1 upgrade + skills](./docs/2026-10-17-engine-0441-and-skills.zh.md) (Chinese)
 
 ---
 
@@ -34,6 +56,22 @@
 
 ![spec_min_p sweep](./assets/spec-minp-sweep.svg)
 
+### 🆕 2026-10-20 · IQ3_S verified on the machine — the rejected "quality king" is back, 256K full context
+
+- **Reversal**: every premise of the 2026-10-05 rejection has changed (engine 0.1.44.1 memory
+  re-allocation + the 48-96 GB page-file fix) — **256K full context now runs** (6.1 GB RAM free),
+  the 46.84 GB arena loads fine
+- **MTP matrix**: spec 2 wins everywhere (97.7 tok/s / 71.1% acceptance); the setup default
+  spec 4 is suboptimal (94.3 / 55.8%)
+- **Scenario matrix**: MTP acceptance RISES with prompt length — short-in 59-70% → ~7K-in
+  78.7-84.8% → ~20K-in 75%+ (prompt-lookup drafting feeds on long context); prefill 2700-2820
+  tok/s on long inputs, zero watchdog events
+- **Dual concurrency**: batch2 × 256K is auto-downgraded by the engine's memory guard to
+  2×128K (dual 256K needs 96 GB RAM) — single lane 256K spec 2 is the optimum on this box
+- 📗 Full log (Chinese) → [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md)
+- 📊 Charts: [MTP spec sweep](./assets/iq3s-mtp-spec.svg) · [scenario matrix](./assets/iq3s-scenario-matrix.svg) · [memory decision guide](./assets/quant-decision-guide.svg)
+
+
 ### 🆕 2026-10-17 · Engine upgraded to 0.1.44.1 (+32% single-stream) + concurrency / KV-pool measurements + web skills
 
 - **Engine v0.1.32 → v0.1.44.1**: single-stream median **83.3 → 110.3 tok/s (+32%)** — three new
@@ -50,22 +88,6 @@
 - **Upgrade gotcha**: back-to-back restarts fail — the old engine's 33 GB of pinned memory releases
   slowly; **wait ≥70 s between restarts**
 - 📘 Full log (Chinese) → [docs/2026-10-17-engine-0441-and-skills.zh.md](./docs/2026-10-17-engine-0441-and-skills.zh.md)
-
-
-### 🆕 2026-10-20 · IQ3_S verified on the machine — the rejected "quality king" is back, 256K full context
-
-- **Reversal**: every premise of the 2026-10-05 rejection has changed (engine 0.1.44.1 memory
-  re-allocation + the 48-96 GB page-file fix) — **256K full context now runs** (6.1 GB RAM free),
-  the 46.84 GB arena loads fine
-- **MTP matrix**: spec 2 wins everywhere (97.7 tok/s / 71.1% acceptance); the setup default
-  spec 4 is suboptimal (94.3 / 55.8%)
-- **Scenario matrix**: MTP acceptance RISES with prompt length — short-in 59-70% → ~7K-in
-  78.7-84.8% → ~20K-in 75%+ (prompt-lookup drafting feeds on long context); prefill 2700-2820
-  tok/s on long inputs, zero watchdog events
-- **Dual concurrency**: batch2 × 256K is auto-downgraded by the engine's memory guard to
-  2×128K (dual 256K needs 96 GB RAM) — single lane 256K spec 2 is the optimum on this box
-- 📗 Full log (Chinese) → [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md)
-- 📊 Charts: [MTP spec sweep](./assets/iq3s-mtp-spec.svg) · [scenario matrix](./assets/iq3s-scenario-matrix.svg) · [memory decision guide](./assets/quant-decision-guide.svg)
 
 
 ## 🤔 Same 5090, two models: this repo (177B MoE) vs [27B NVFP4](https://github.com/lifeidle/qwen3.8-27b-nvfp4-5090-laptop-24gb-optimal) — which one?
