@@ -52,6 +52,22 @@
 - 📘 Full log (Chinese) → [docs/2026-10-17-engine-0441-and-skills.zh.md](./docs/2026-10-17-engine-0441-and-skills.zh.md)
 
 
+### 🆕 2026-10-20 · IQ3_S verified on the machine — the rejected "quality king" is back, 256K full context
+
+- **Reversal**: every premise of the 2026-10-05 rejection has changed (engine 0.1.44.1 memory
+  re-allocation + the 48-96 GB page-file fix) — **256K full context now runs** (6.1 GB RAM free),
+  the 46.84 GB arena loads fine
+- **MTP matrix**: spec 2 wins everywhere (97.7 tok/s / 71.1% acceptance); the setup default
+  spec 4 is suboptimal (94.3 / 55.8%)
+- **Scenario matrix**: MTP acceptance RISES with prompt length — short-in 59-70% → ~7K-in
+  78.7-84.8% → ~20K-in 75%+ (prompt-lookup drafting feeds on long context); prefill 2700-2820
+  tok/s on long inputs, zero watchdog events
+- **Dual concurrency**: batch2 × 256K is auto-downgraded by the engine's memory guard to
+  2×128K (dual 256K needs 96 GB RAM) — single lane 256K spec 2 is the optimum on this box
+- 📗 Full log (Chinese) → [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md)
+- 📊 Charts: [MTP spec sweep](./assets/iq3s-mtp-spec.svg) · [scenario matrix](./assets/iq3s-scenario-matrix.svg) · [memory decision guide](./assets/quant-decision-guide.svg)
+
+
 ## 🤔 Same 5090, two models: this repo (177B MoE) vs [27B NVFP4](https://github.com/lifeidle/qwen3.8-27b-nvfp4-5090-laptop-24gb-optimal) — which one?
 
 Both repos run on the same RTX 5090 Laptop 24GB. The difference is not which model is stronger — it is **what role the machine is playing**:
@@ -146,7 +162,7 @@ python setup.py --family qwen --model IQ3_XXS --context 131072 --vision yes --po
 | 1 | AtomicChat AD-3.84bpw-IQ4_XS-M64 | 3.84 bpw | [AtomicChat/Qwen3.8-Flash-Next-GGUF](https://huggingface.co/AtomicChat/Qwen3.8-Flash-Next-GGUF) | llama.cpp era main |
 | 2 | ISTA-DASLab GSQ-RCO **Q2_0** | ~2.2 bpw | [ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF](https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF) | ⬜ retired (was the speed tier; overtaken by IQ3_XXS) |
 | 3 | ISTA-DASLab GSQ-RCO **IQ3_XXS** | ~3.1 bpw | same repo | ✅ **active (the best)** |
-| 4 | ISTA-DASLab GSQ-RCO IQ3_S | ~3.44 bpw | same repo | ⛔ evaluated, rejected |
+| 4 | ISTA-DASLab GSQ-RCO IQ3_S | ~3.44 bpw | same repo | ✅ **revived 2026-10-20 (precision-first, active)** |
 | 5 | ISTA-DASLab GSQ-RCO IQ2_XS | ~2.5 bpw | same repo | ⛔ evaluated, not deployed |
 | 6 | ISTA-DASLab Coder **IQ1_M** (256/512-expert pruned) | 1.89 bpw | [ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF](https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF) | ✅ backup (low-RAM) |
 | 7 | Qwen (Alibaba) BF16 official checkpoint | 16 bpw | [Qwen/Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) | 🔧 MTP weights source only |
@@ -158,7 +174,7 @@ python setup.py --family qwen --model IQ3_XXS --context 131072 --vision yes --po
 
 **3️⃣ ISTA-DASLab GSQ-RCO IQ3_XXS (quality line, current daily)** — a full bit more precision; also the best drafter (59-71% acceptance — mind that its spec_min_p peak is 0.7, not Q2_0's 0.3). Outcome: **77.4 tok/s** (32K) / 74.4 (256K+Vision). The 42.9 GB arena leaves comfortable headroom for 256K on 64 GB RAM.
 
-**4️⃣ ISTA-DASLab GSQ-RCO IQ3_S (evaluated, rejected)** — 3.44 bpw, upstream reports it *matches the full BF16 model* — the best quality of all. But its 50.3 GB pinned arena + 3.1 GB KV at 256K leaves ~10 GB for the OS on a 64 GB machine; upstream itself flags "64 GB PC with little else running". With 256K as a hard requirement, the risk was unacceptable. **Revival condition: a RAM upgrade to 96 GB.**
+**4️⃣ ISTA-DASLab GSQ-RCO IQ3_S (✅ revived 2026-10-20 — precision-first active tier)** — 3.44 bpw, upstream reports it *matches the full BF16 model* — the best quality of all. Originally rejected on engine 0.1.32 (50.3 GB pinned arena + 3.1 GB KV left no margin on 63.4 GB RAM). Re-evaluated after the 0.1.44.1 upgrade and the 48-96 GB page-file fix: **256K full context runs (6.1 GB RAM free), no RAM upgrade needed** — and the official memory table points the 64 GB class at IQ3_S. Outcome: **97.7 tok/s** (MTP spec 2 / 71.1% acceptance), quality matching the full model. Full log: [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md) (Chinese) · decision guide: [assets/quant-decision-guide.svg](./assets/quant-decision-guide.svg)
 
 **5️⃣ ISTA-DASLab GSQ-RCO IQ2_XS (evaluated, not deployed)** — slightly better than Q2_0 at nearly the same speed. Its quality increment sits between Q2_0 and IQ3_XXS; when quality became the priority we jumped straight to IQ3_XXS, so the middle tier had no deployment window.
 
