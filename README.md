@@ -50,6 +50,19 @@
 - 📘 完整实录 → [docs/2026-10-17-engine-0441-and-skills.zh.md](./docs/2026-10-17-engine-0441-and-skills.zh.md)
 
 
+### 🆕 2026-10-20 · IQ3_S 上机实测——曾被否决的"精度王"复活，256K 满上下文跑通
+
+- **翻案**：2026-10-05 否决 IQ3_S 的前提全部变化（引擎 0.1.44.1 显存缓存重分配 + 页面文件
+  48-96 GB 修复 commit 墙）——**实测 256K 满上下文跑通**（RAM 可用 6.1 GB），arena 46.84 GB 装入成功
+- **MTP 矩阵**：spec 2 全面胜出（97.7 tok/s / 接受率 71.1%），setup 默认 spec 4 偏劣（94.3 / 55.8%）
+- **场景矩阵**：MTP 接受率随 prompt 长度上升——短入 59-70% → ~7K 入 78.7-84.8% → ~20K 入 75%+
+  （prompt-lookup 草稿器吃长上下文红利）；prefill 长输入 2700-2820 tok/s，零看门狗事件
+- **双并发**：batch2 × 256K 被引擎内存守卫自动降级为 2×128K（96 GB 内存才能双路 256K）——
+  单路 256K spec2 为本机最优
+- 📗 完整实录 → [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md)
+- 📊 图表：[MTP spec 矩阵](./assets/iq3s-mtp-spec.svg) · [场景矩阵](./assets/iq3s-scenario-matrix.svg) · [内存选型指南](./assets/quant-decision-guide.svg)
+
+
 ## 🤔 同一台 5090：本仓库 177B MoE vs [27B NVFP4](https://github.com/lifeidle/qwen3.8-27b-nvfp4-5090-laptop-24gb-optimal) —— 怎么选？
 
 两个仓库是同一台 RTX 5090 Laptop 24GB 上的两种使用姿势。差别不在谁更强，在**这台电脑当时扮演什么角色**：
@@ -143,8 +156,8 @@ python setup.py --family qwen --model IQ3_XXS --context 131072 --vision yes --po
 |---|---|---|---|---|
 | 1 | AtomicChat AD-3.84bpw-IQ4_XS-M64 | 3.84 bpw | [AtomicChat/Qwen3.8-Flash-Next-GGUF](https://huggingface.co/AtomicChat/Qwen3.8-Flash-Next-GGUF) | llama.cpp 时代主力 |
 | 2 | ISTA-DASLab GSQ-RCO **Q2_0** | ~2.2 bpw | [ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF](https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF) | ⬜ 退役（原速度线，被 IQ3_XXS 反超） |
-| 3 | ISTA-DASLab GSQ-RCO **IQ3_XXS** | ~3.1 bpw | 同上 | ✅ **现役（最佳选择）** |
-| 4 | ISTA-DASLab GSQ-RCO IQ3_S | ~3.44 bpw | 同上 | ⛔ 评估后否决 |
+| 3 | ISTA-DASLab GSQ-RCO **IQ3_XXS** | ~3.1 bpw | 同上 | ✅ 现役（速度 / 256K 宽松优先） |
+| 4 | ISTA-DASLab GSQ-RCO **IQ3_S** | ~3.44 bpw | 同上 | ✅ **2026-10-20 复活（精度优先现役）** |
 | 5 | ISTA-DASLab GSQ-RCO IQ2_XS | ~2.5 bpw | 同上 | ⛔ 评估后未部署 |
 | 6 | ISTA-DASLab Coder **IQ1_M**（256/512 专家剪枝） | 1.89 bpw | [ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF](https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF) | ✅ 备选（省内存线） |
 | 7 | Qwen（阿里巴巴通义千问团队）BF16 官方 checkpoint | 16 bpw | [Qwen/Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) | 🔧 仅作 MTP 权重源 |
@@ -168,11 +181,17 @@ python setup.py --family qwen --model IQ3_XXS --context 131072 --vision yes --po
 - **为什么选**：长项目/推理密集场景需要更低的量化损失；且 arena 42.9GB 在 64GB 内存上给 256K 上下文留足余量
 - **结果**：**77.4 tok/s**（32K）/ 74.4 tok/s（256K+Vision）。注意它的 spec_min_p 峰值在 0.7 与 Q2_0 的 0.3 完全不同
 
-### 4️⃣ ISTA-DASLab GSQ-RCO IQ3_S —— 评估后否决
+### 4️⃣ ISTA-DASLab GSQ-RCO IQ3_S —— ✅ 2026-10-20 复活：精度优先现役档
 
 - **优势**：3.5-bit，官方基准上**匹配完整 BF16 模型**——三档里质量最高
-- **为什么放弃**：arena 50.3 GB pinned，256K 上下文的 KV 还要 3.1 GB——64GB 内存的机器上只剩 ~10GB 给系统，官方自己也标注"64 GB PC with little else running"。256K 是硬需求，这个组合风险不可接受
-- **复活条件**：内存升级到 96GB 后即可启用（见 [内存升级 96GB 可行性分析](./内存升级96GB可行性分析.md) 本地文档）
+- **为什么当初放弃（2026-10-05，历史记录）**：引擎 0.1.32 下 arena 50.3 GB pinned + 256K 的 KV 3.1 GB，
+  63.4 GB 内存的机器余量不足——当时判定风险不可接受，复活条件为内存升级 96GB
+- **为什么复活（2026-10-20）**：引擎升级 0.1.44.1（显存缓存重分配）+ 页面文件 48-96 GB（commit 墙拆除）
+  之后重估——**实测 256K 满上下文跑通（RAM 可用 6.1 GB），无需升内存**；官方内存表亦将 64 GB 档
+  指向 IQ3_S
+- **结果**：**97.7 tok/s**（MTP spec 2 / 接受率 71.1%）、256K 满上下文、质量匹配完整 BF16 模型。
+  场景矩阵另发现 MTP 接受率随 prompt 长度上升（长上下文开发红利）。详见
+  [2026-10-20 实录](./docs/2026-10-20-iq3s-verified.zh.md) · [选型指南](./assets/quant-decision-guide.svg)
 
 ### 5️⃣ ISTA-DASLab GSQ-RCO IQ2_XS —— 评估后未部署
 
