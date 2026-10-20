@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 640" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="640" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">Qwen3.8-Flash-Next (177B MoE) — 五个量化档，各自的王座与王座之外的代价</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">同一台 RTX 5090 Laptop 24GB · 引擎 Strata 0.1.44.1 · 全部为本机实测（2026-09 / 2026-10）</text>
+
+  <!-- ============ 卡片 1：IQ3_S（现役精度档）============ -->
+  <rect x="24" y="88" width="832" height="96" rx="10" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+  <rect x="24" y="88" width="6" height="96" rx="3" fill="#1a7f37"/>
+  <text x="44" y="116" font-size="16" font-weight="700" fill="#1a7f37">IQ3_S · 3.44 bpw —— 🏆 精度王（现役）</text>
+  <text x="830" y="116" font-size="15" font-weight="700" text-anchor="end" fill="#1a7f37">97.7 tok/s</text>
+  <text x="44" y="140" font-size="12.5" fill="#1f2328">质量 ★★★★★ 匹配完整 BF16 模型 · 256K 满上下文（余量偏紧）· 双并发会降 128K · 内存锁定 46.8 GB（紧）</text>
+  <text x="44" y="166" font-size="13" fill="#1f2328">👉 最佳场景：<tspan font-weight="700">长项目持续开发、复杂推理</tspan> —— 越是大项目，MTP 接受率越高（59% → 85%）</text>
+
+  <!-- ============ 卡片 2：IQ3_XXS（现役速度档）============ -->
+  <rect x="24" y="196" width="832" height="96" rx="10" fill="#ddf4ff" stroke="#0969da" stroke-width="2"/>
+  <rect x="24" y="196" width="6" height="96" rx="3" fill="#0969da"/>
+  <text x="44" y="224" font-size="16" font-weight="700" fill="#0969da">IQ3_XXS · 3.1 bpw —— ⚡ 速度王（备选）</text>
+  <text x="830" y="224" font-size="15" font-weight="700" text-anchor="end" fill="#0969da">110.3 tok/s</text>
+  <text x="44" y="248" font-size="12.5" fill="#1f2328">质量 ★★★★ 3-bit 档优秀 · 256K 宽松（余 ~14 GB）· batch3 × 256K 并发聚合 82 tok/s · 内存锁定 40 GB（宽松）</text>
+  <text x="44" y="274" font-size="13" fill="#1f2328">👉 最佳场景：<tspan font-weight="700">多人大文档、多 Agent 高频并发</tspan> —— 牺牲一档质量换 256K 宽余量与真三路并发</text>
+
+  <!-- ============ 卡片 3：Q2_0（退役）============ -->
+  <rect x="24" y="304" width="832" height="82" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <rect x="24" y="304" width="6" height="82" rx="3" fill="#8b949e"/>
+  <text x="44" y="330" font-size="15" font-weight="700" fill="#57606a">Q2_0 · 2.2 bpw —— 已退役（历史速度线）</text>
+  <text x="830" y="330" font-size="14" font-weight="700" text-anchor="end" fill="#57606a">93.5 tok/s</text>
+  <text x="44" y="352" font-size="12.5" fill="#57606a">质量 ★★★ 2-bit 但有 GSQ+RCO 论文方法背书 · 曾是"速度优先"线</text>
+  <text x="44" y="376" font-size="13" fill="#57606a">👉 退役原因：<tspan font-weight="700">被 IQ3_XXS 全面反超</tspan>——质量档反而更快（草稿接受率 78% vs 44-54%），速度线失去意义</text>
+
+  <!-- ============ 卡片 4：Coder IQ1_M（备选）============ -->
+  <rect x="24" y="398" width="832" height="82" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <rect x="24" y="398" width="6" height="82" rx="3" fill="#bf8700"/>
+  <text x="44" y="424" font-size="15" font-weight="700" fill="#bf8700">Coder IQ1_M · 1.89 bpw —— 内存紧张备选（代码特化）</text>
+  <text x="830" y="424" font-size="14" font-weight="700" text-anchor="end" fill="#bf8700">62.5 tok/s</text>
+  <text x="44" y="446" font-size="12.5" fill="#57606a">质量 ★★ 代码/工具 ★★★★（512 专家剪枝到 256，专留代码相关）· arena 减半 23.4 GB · 非代码领域弱</text>
+  <text x="44" y="470" font-size="13" fill="#1f2328">👉 最佳场景：<tspan font-weight="700">内存被占用时的多开、以代码为主的轻量负载</tspan></text>
+
+  <!-- ============ 卡片 5：IQ2_XS（未部署）============ -->
+  <rect x="24" y="492" width="832" height="64" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <rect x="24" y="492" width="6" height="64" rx="3" fill="#8b949e"/>
+  <text x="44" y="516" font-size="15" font-weight="700" fill="#57606a">IQ2_XS · 2.5 bpw —— 评估后未部署</text>
+  <text x="830" y="516" font-size="14" font-weight="700" text-anchor="end" fill="#57606a">未实测</text>
+  <text x="44" y="540" font-size="13" fill="#57606a">👉 定位尴尬：质量增量介于 Q2_0 与 IQ3_XXS 之间——质量需求出现时直接跳了 IQ3_XXS，中间档没有部署窗口</text>
+
+  <!-- ============ 怎么选 ============ -->
+  <rect x="24" y="572" width="832" height="52" rx="10" fill="#1f2328"/>
+  <text x="44" y="596" font-size="14" font-weight="700" fill="#ffffff">怎么选：精度优先 → IQ3_S ｜ 速度与多路并发优先 → IQ3_XXS ｜ 内存被占用 → Coder IQ1_M ｜ 96 GB 内存 → 直接上 IQ4_XS</text>
+</svg>
