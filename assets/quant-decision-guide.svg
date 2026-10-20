@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 560" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="560" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">Qwen3.8-Flash-Next (177B MoE) — which quant for your memory (RAM + VRAM combined)</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">Strata auto-selects by memory · low-RAM mode starts below your row (slower) · source: Strata official README + this repo's 2026-10-20 verification</text>
+
+  <!-- row 1: 32 GB -->
+  <rect x="28" y="92" width="824" height="76" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <text x="48" y="122" font-size="17" font-weight="700" fill="#1f2328">32 GB</text>
+  <text x="48" y="146" font-size="12.5" fill="#57606a">fits nothing else</text>
+  <text x="150" y="122" font-size="14" font-weight="700" fill="#1f2328">Gyro-S (27.6 GB) · Coder IQ1_M</text>
+  <text x="150" y="146" font-size="12.5" fill="#57606a">quality lower — Coder keeps 256/512 experts (code-focused)</text>
+
+  <!-- row 2: 40 GB -->
+  <rect x="28" y="180" width="824" height="76" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <text x="48" y="210" font-size="17" font-weight="700" fill="#1f2328">40 GB</text>
+  <text x="48" y="234" font-size="12.5" fill="#57606a">IQ2_XS-class quality</text>
+  <text x="150" y="210" font-size="14" font-weight="700" fill="#1f2328">Swift 1.5 IQ2_XS (39.2 GB) · Gyro-M (35 GB)</text>
+  <text x="150" y="234" font-size="12.5" fill="#57606a">Gyro-M ≈ IQ3_XXS quality but writes answers 17-21% slower</text>
+
+  <!-- row 3: 48 GB -->
+  <rect x="28" y="268" width="824" height="76" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <text x="48" y="298" font-size="17" font-weight="700" fill="#1f2328">48 GB</text>
+  <text x="48" y="322" font-size="12.5" fill="#57606a">3-bit i-quant</text>
+  <text x="150" y="298" font-size="14" font-weight="700" fill="#1f2328">IQ3_XXS (47.0 GB)</text>
+  <text x="150" y="322" font-size="12.5" fill="#57606a">slower, better · speed 110 tok/s peak on this repo's 5090 Laptop</text>
+
+  <!-- row 4: 64 GB — verified, highlighted -->
+  <rect x="28" y="356" width="824" height="96" rx="10" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+  <text x="48" y="390" font-size="17" font-weight="700" fill="#1a7f37">64 GB</text>
+  <text x="48" y="414" font-size="12.5" fill="#1a7f37">3.5-bit i-quant</text>
+  <text x="150" y="390" font-size="14" font-weight="700" fill="#1a7f37">IQ3_S (54.8 GB) — the best: matches the full model on published tests</text>
+  <text x="150" y="414" font-size="12.5" fill="#1f2328">slowest of the 3-bit class · this repo verified it 2026-10-20:</text>
+  <text x="150" y="434" font-size="12.5" fill="#1f2328">RTX 5090 Laptop 24GB + 63 GB RAM · 97.7 tok/s peak (MTP spec 2) · 256K context runs fine</text>
+
+  <!-- row 5: 96 GB+ -->
+  <rect x="28" y="464" width="824" height="76" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <text x="48" y="494" font-size="17" font-weight="700" fill="#1f2328">96 GB+</text>
+  <text x="48" y="518" font-size="12.5" fill="#57606a">4-8 bit class</text>
+  <text x="150" y="494" font-size="14" font-weight="700" fill="#1f2328">IQ4_XS (72 GB) → Q8_0 (136 GB)</text>
+  <text x="150" y="518" font-size="12.5" fill="#57606a">closer to the full model in quality and speed · IQ4_XS keeps every expert in RAM from ~80 GB</text>
+
+  <text x="28" y="548" font-size="12.5" fill="#57606a">Figures are RAM + VRAM combined. Less memory than a row says still works: Strata's low-RAM mode starts by itself (much slower with a small card).</text>
+</svg>
