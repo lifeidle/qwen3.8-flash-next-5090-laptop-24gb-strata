@@ -1,6 +1,6 @@
 # Qwen3.8-Flash-Next 177B on an RTX 5090 Laptop
 
-**24 GB VRAM + 64 GB RAM · 256K Context · 110 tok/s peak · 100+ sustained · Vision Enabled**
+**24 GB VRAM + 64 GB RAM · 256K Context · 110 tok/s peak · now running IQ3_S (matches full-model quality) · Vision Enabled**
 
 **中文** ｜ [English →](./README.en.md)
 
@@ -9,9 +9,30 @@
 ![RAM](https://img.shields.io/badge/RAM-64%20GB-0969da?style=flat-square)
 ![Context](https://img.shields.io/badge/context-256K%20full-2ea44f?style=flat-square)
 ![Speed](https://img.shields.io/badge/speed-up%20to%20110%20tok%2Fs-8250df?style=flat-square)
-![Quant](https://img.shields.io/badge/quant-IQ3_XXS-bf8700?style=flat-square)
+![Quant](https://img.shields.io/badge/quant-IQ3_S_3.44bpw-1a7f37?style=flat-square)
 ![Vision](https://img.shields.io/badge/vision-enabled-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+
+---
+
+## 🏆 现役配置（2026-10-20 更新）：IQ3_S —— 精度最高档，今天跑通的
+
+![五个量化档对比](./assets/quant-comparison-2026.svg)
+
+**IQ3_S（3.44 bpw）今天上机实测通过**：官方基准匹配完整 BF16 模型，256K 满上下文跑通，
+单路 97.7 tok/s（MTP spec 2）。与 IQ3_XXS 的取舍一句话：**IQ3_S 赢精度，IQ3_XXS 赢速度与并发余量**。
+
+| | IQ3_S（现役 · 精度优先） | IQ3_XXS（备选 · 速度/并发优先） |
+|---|---|---|
+| 质量 | **匹配完整 BF16 模型** | 3-bit 档优秀 |
+| 单路速度 | 97.7 tok/s | **110.3 tok/s** |
+| 上下文 | 256K（内存余 6.1GB 偏紧） | 256K（宽松 ~14GB） |
+| 并发 | batch2 → 2×128K（引擎守卫降级） | **batch3 × 256K（聚合 82 tok/s）** |
+| 内存锁定 | 46.84 GB（紧） | 40 GB（宽松） |
+| **选它** | **长项目精度开发、复杂推理** | **多人大文档、多 Agent 高频并发** |
+
+> 📊 全模型优劣势对比：[上方卡片图](./assets/quant-comparison-2026.svg) · [内存选型指南](./assets/quant-decision-guide.svg)
+> 📘 今日实录：[IQ3_S 上机实测](./docs/2026-10-20-iq3s-verified.zh.md) · [引擎 0.1.44.1 升级与技能包](./docs/2026-10-17-engine-0441-and-skills.zh.md)
 
 ---
 
@@ -34,6 +55,19 @@
 
 ![spec_min_p sweep](./assets/spec-minp-sweep.svg)
 
+### 🆕 2026-10-20 · IQ3_S 上机实测——曾被否决的"精度王"复活，256K 满上下文跑通
+
+- **翻案**：2026-10-05 否决 IQ3_S 的前提全部变化（引擎 0.1.44.1 显存缓存重分配 + 页面文件
+  48-96 GB 修复 commit 墙）——**实测 256K 满上下文跑通**（RAM 可用 6.1 GB），arena 46.84 GB 装入成功
+- **MTP 矩阵**：spec 2 全面胜出（97.7 tok/s / 接受率 71.1%），setup 默认 spec 4 偏劣（94.3 / 55.8%）
+- **场景矩阵**：MTP 接受率随 prompt 长度上升——短入 59-70% → ~7K 入 78.7-84.8% → ~20K 入 75%+
+  （prompt-lookup 草稿器吃长上下文红利）；prefill 长输入 2700-2820 tok/s，零看门狗事件
+- **双并发**：batch2 × 256K 被引擎内存守卫自动降级为 2×128K（96 GB 内存才能双路 256K）——
+  单路 256K spec2 为本机最优
+- 📗 完整实录 → [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md)
+- 📊 图表：[MTP spec 矩阵](./assets/iq3s-mtp-spec.svg) · [场景矩阵](./assets/iq3s-scenario-matrix.svg) · [内存选型指南](./assets/quant-decision-guide.svg)
+
+
 ### 🆕 2026-10-17 · 引擎升级 0.1.44.1（单路 +32%）+ 并发 / KV 池实测 + 网页技能包
 
 - **引擎 v0.1.32 → v0.1.44.1**：单路中位 **83.3 → 110.3 tok/s（+32%）**——route tail skip、
@@ -48,19 +82,6 @@
   汇率（方向解析修复）、股价（腾讯行情）、读网页（SSRF 防护）、语音输入、访客记忆
 - **升级坑**：连续重启会失败——旧引擎 33GB 锁页内存退出慢，**重启间隔 ≥70 秒**
 - 📘 完整实录 → [docs/2026-10-17-engine-0441-and-skills.zh.md](./docs/2026-10-17-engine-0441-and-skills.zh.md)
-
-
-### 🆕 2026-10-20 · IQ3_S 上机实测——曾被否决的"精度王"复活，256K 满上下文跑通
-
-- **翻案**：2026-10-05 否决 IQ3_S 的前提全部变化（引擎 0.1.44.1 显存缓存重分配 + 页面文件
-  48-96 GB 修复 commit 墙）——**实测 256K 满上下文跑通**（RAM 可用 6.1 GB），arena 46.84 GB 装入成功
-- **MTP 矩阵**：spec 2 全面胜出（97.7 tok/s / 接受率 71.1%），setup 默认 spec 4 偏劣（94.3 / 55.8%）
-- **场景矩阵**：MTP 接受率随 prompt 长度上升——短入 59-70% → ~7K 入 78.7-84.8% → ~20K 入 75%+
-  （prompt-lookup 草稿器吃长上下文红利）；prefill 长输入 2700-2820 tok/s，零看门狗事件
-- **双并发**：batch2 × 256K 被引擎内存守卫自动降级为 2×128K（96 GB 内存才能双路 256K）——
-  单路 256K spec2 为本机最优
-- 📗 完整实录 → [docs/2026-10-20-iq3s-verified.zh.md](./docs/2026-10-20-iq3s-verified.zh.md)
-- 📊 图表：[MTP spec 矩阵](./assets/iq3s-mtp-spec.svg) · [场景矩阵](./assets/iq3s-scenario-matrix.svg) · [内存选型指南](./assets/quant-decision-guide.svg)
 
 
 ## 🤔 同一台 5090：本仓库 177B MoE vs [27B NVFP4](https://github.com/lifeidle/qwen3.8-27b-nvfp4-5090-laptop-24gb-optimal) —— 怎么选？
