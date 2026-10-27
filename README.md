@@ -63,8 +63,9 @@
 - **问题**：双并发时一个窗口反复报 "SSE stream error: Timeout after 60000ms (origin: downstream)"
   ——客户端 60 秒没收到任何字节就断开。三个静默窗口：另一路的长文档读入（共享 prefill
   带宽，解码停摆 50-90 s）、排队等槽位、超长思考
-- **修复**：server.py 流式输出加心跳——源静默 10 秒发一个 `: keep-alive` SSE 注释行
-  （所有客户端忽略内容但重置超时计时器），OpenAI 与 Anthropic 两条 API 路径都覆盖
+- **修复**：server.py 流式输出加**数据帧心跳**——源静默 10 秒发一个真实 data 事件
+  （OpenAI 空 delta 块 / Anthropic ping 事件；SSE 注释行不够——部分客户端只认 data 事件），
+  OpenAI 与 Anthropic 两条 API 路径都覆盖
 - **实测**：一路灌 13 万 token 长文档期间，另一路流式窗口最大静默间隔仅 **1.4 秒**、
   收到 2 次 keep-alive——60 秒超时从机制上不可能再触发
 - **客户端侧**：也建议把流式超时调到 300 s（双保险）
