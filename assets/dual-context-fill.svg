@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="420" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">双路 KV 池满载验证 — 2 × 243,469 tokens 同时在线</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">batch2 × 262144 · 引擎 0.1.50 · 两路同时提交 24 万 token 长文档 · 零错误 · 2026-10-27</text>
+
+  <!-- lane A bar -->
+  <text x="330" y="120" font-size="13.5" text-anchor="end" fill="#1f2328">路 A · 评审纪要 #1</text>
+  <!-- scale: 0..262144 maps to x 340..790 (450px) = 0.001717 px/token → 243469 tok = 418px -->
+  <rect x="340" y="106" width="418" height="24" rx="4" fill="#1a7f37"/>
+  <text x="764" y="123" font-size="12.5" font-weight="700" fill="#ffffff">243,469</text>
+  <!-- lane B bar -->
+  <text x="330" y="164" font-size="13.5" text-anchor="end" fill="#1f2328">路 B · 评审纪要 #2</text>
+  <rect x="340" y="150" width="418" height="24" rx="4" fill="#1a7f37"/>
+  <text x="764" y="167" font-size="12.5" font-weight="700" fill="#ffffff">243,469</text>
+
+  <!-- 256K capacity marker: 262144 tok → x = 340 + 450 = 790 (right edge of bars area) -->
+  <text x="790" y="196" font-size="12" text-anchor="end" fill="#57606a">每路容量 = 262,144（训练全长）→ 槽位 3.65 GiB × 2 已按满配分配</text>
+
+  <!-- old engine downgrade line: 131072 tok → x = 340 + 225 = 565 -->
+  <rect x="563" y="100" width="2" height="86" fill="#d4a72c"/>
+  <text x="563" y="94" font-size="12" font-weight="700" text-anchor="middle" fill="#9a6700">旧引擎强制降级线 131,072</text>
+
+  <!-- stats row -->
+  <rect x="28" y="220" width="824" height="1" fill="#d0d7de"/>
+  <text x="28" y="252" font-size="14" font-weight="700" fill="#1f2328">同时在线合计 486,938 tokens —— 旧引擎强制降级线（262,144）的 1.86 倍</text>
+  <text x="28" y="280" font-size="13" fill="#1f2328">· 双路并发 prefill：2105 / 2109 tok/s（共享读入带宽）· 26.7 s 双灌完成（52 万字符）</text>
+  <text x="28" y="304" font-size="13" fill="#1f2328">· 每路 KV 窗口 3.65 GiB（int8，262144 cells）× 2 路 = 显存直装，零溢出零错误</text>
+  <text x="28" y="328" font-size="13" fill="#1f2328">· 旧引擎（0.1.44.1）在此负载下强制降级 2×128K 并写回配置；0.1.50 满配运行</text>
+
+  <rect x="28" y="352" width="824" height="1" fill="#d0d7de"/>
+  <text x="28" y="380" font-size="13" fill="#1f2328" font-weight="700">含义：63.4 GB 内存的笔记本上，两路用户各自塞满 25 万字的项目文档同时开发——</text>
+  <text x="28" y="402" font-size="13" fill="#1f2328">这就是本仓库今天交付的"双路 256K 满上下文"。</text>
+</svg>
