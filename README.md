@@ -58,6 +58,20 @@
 
 ![spec_min_p sweep](./assets/spec-minp-sweep.svg)
 
+### 🆕 2026-10-28 · 服务端心跳：双并发下客户端 60 秒流式超时根治
+
+- **问题**：双并发时一个窗口反复报 "SSE stream error: Timeout after 60000ms (origin: downstream)"
+  ——客户端 60 秒没收到任何字节就断开。三个静默窗口：另一路的长文档读入（共享 prefill
+  带宽，解码停摆 50-90 s）、排队等槽位、超长思考
+- **修复**：server.py 流式输出加心跳——源静默 10 秒发一个 `: keep-alive` SSE 注释行
+  （所有客户端忽略内容但重置超时计时器），OpenAI 与 Anthropic 两条 API 路径都覆盖
+- **实测**：一路灌 13 万 token 长文档期间，另一路流式窗口最大静默间隔仅 **1.4 秒**、
+  收到 2 次 keep-alive——60 秒超时从机制上不可能再触发
+- **客户端侧**：也建议把流式超时调到 300 s（双保险）
+- 📗 说明 → [docs/2026-10-28-heartbeat-keepalive.zh.md](./docs/2026-10-28-heartbeat-keepalive.zh.md) ·
+  📊 [机制与时间线](./assets/heartbeat-keepalive.svg)
+
+
 ### 🆕 2026-10-27 · 引擎 0.1.50：双路 256K 满上下文解锁 + 满载验证
 
 - **引擎升级 0.1.44.1 → 0.1.50**（0.2.6 包，换文件流程）：全部旧参数一次兼容，Flash-Next
