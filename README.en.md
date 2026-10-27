@@ -64,9 +64,10 @@ One-line trade vs IQ3_XXS: **IQ3_S wins quality; IQ3_XXS wins speed and concurre
   Timeout after 60000ms (origin: downstream)" — the client hung up after 60 s of zero bytes.
   Three silent windows: the other lane's long document ingest (shared prefill bandwidth stalls
   decode for 50-90 s), queueing for a slot, an extra-long thinking phase
-- **The fix**: the server's stream output now carries a heartbeat — when the source is silent
-  for 10 s it emits a `: keep-alive` SSE comment (every client ignores the content but resets
-  its timeout), covering both the OpenAI and the Anthropic API paths
+- **The fix**: the server's stream output now carries **data-frame heartbeats** — when the
+  source is silent for 10 s it emits a real data event (an empty-delta OpenAI chunk / an
+  Anthropic ping event; SSE comments proved not enough — some clients only count data events
+  for their timer), covering both the OpenAI and the Anthropic API paths
 - **Measured**: while one lane ingested a 130K-token document, the other lane's stream saw a
   maximum silent gap of **1.4 s** and received 2 keep-alives — a 60 s timeout can no longer
   happen mechanically
