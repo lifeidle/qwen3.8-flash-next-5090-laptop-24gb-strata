@@ -25,15 +25,23 @@
 **为什么客户端会断**：多数客户端（Cherry Studio、OneAPI 网关、各类 Agent 框架）对
 SSE 流有**无字节超时**（60 秒是常见默认值）。静默超过它 → 主动断开并报错。
 
-## 二、修复：服务端心跳
+## 二、修复：服务端心跳（两层递进）
 
 server.py 的流式输出（OpenAI `/v1/chat/completions` 与 Anthropic `/v1/messages` 两条路径）
-包一层心跳：
+包一层心跳：一个 feeder 线程把引擎事件搬进队列，消费端以 10 秒超时等待。
 
-- 一个 feeder 线程把引擎事件搬进队列；消费端以 10 秒超时等待
-- **源静默满 10 秒** → 产出一个 None → HTTP 层写 `": keep-alive\n\n"`（SSE 注释行）
-- SSE 注释行是协议标准的一部分：**所有标准客户端解析时忽略它，但把它算作"收到字节"**
-  ——超时计时器重置
+**第一版（SSE 注释行）**：源静默满 10 秒 → HTTP 层写 `": keep-alive\n\n"`。SSE 协议里
+注释行会被所有标准解析器忽略——本意是"不是数据但算收到字节"。
+
+**实测发现注释行不够**：部署后用户的客户端仍然超时——**有些客户端的超时计时器只统计
+data 事件，SSE 注释行不重置它**。第二版升级为**数据帧心跳**：
+
+- OpenAI 路径：`data: {"choices":[{"index":0,"delta":{},"finish_reason":null}]}`——
+  空 delta 的标准块，无内容、不破坏任何解析
+- Anthropic 路径：`event: ping\ndata: {"type": "ping"}`——Anthropic 官方流自带的
+  保活事件，客户端按协议跳过
+
+两种都是**真实 data 事件**——任何计时器实现（按字节、按行、按事件）都会重置。
 
 ```python
 def heartbeated(chunks, interval=10.0):
@@ -52,9 +60,9 @@ def heartbeated(chunks, interval=10.0):
     try:
         while True:
             try:
-                c = q.get(timeout=interval)
+                c = q.get(timeout=interval)     # 源静默 interval 秒 → None → 数据帧心跳
             except queue.Empty:
-                yield None                      # 静默窗口：keep-alive
+                yield None
                 continue
             if c is DONE:
                 break
