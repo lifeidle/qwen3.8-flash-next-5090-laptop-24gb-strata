@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="500" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">Engine 0.1.50 upgrade — single-lane cost, dual-lane 256K unlocked</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">IQ3_S @ 256K · RTX 5090 Laptop 24GB · 63.4 GB RAM · measured 2026-10-27 · 3-request medians</text>
+
+  <!-- ============ left panel: single-lane spec sweep (both engines) ============ -->
+  <text x="28" y="102" font-size="14" font-weight="700" fill="#1f2328">单路解码 tok/s（spec 扫描）</text>
+  <!-- scale: 0..110 maps to x 60..420 (360px) = 3.27 px/tok -->
+  <!-- spec2: 0.1.44.1 97.7 (319px), 0.1.50 93.1 (304px) -->
+  <text x="52" y="134" font-size="12" text-anchor="end" fill="#1f2328">spec 2</text>
+  <rect x="60" y="122" width="319" height="16" rx="3" fill="#0969da"/>
+  <text x="384" y="135" font-size="11.5" font-weight="700" fill="#0969da">97.7 (0.1.44.1)</text>
+  <rect x="60" y="142" width="304" height="16" rx="3" fill="#1a7f37"/>
+  <text x="369" y="155" font-size="11.5" font-weight="700" fill="#1a7f37">93.1 (0.1.50)</text>
+  <!-- spec3: 94.2 (308), 92.7 (303) -->
+  <text x="52" y="192" font-size="12" text-anchor="end" fill="#1f2328">spec 3</text>
+  <rect x="60" y="180" width="308" height="16" rx="3" fill="#0969da"/>
+  <text x="373" y="193" font-size="11.5" font-weight="700" fill="#0969da">94.2 (0.1.44.1)</text>
+  <rect x="60" y="200" width="303" height="16" rx="3" fill="#1a7f37"/>
+  <text x="368" y="213" font-size="11.5" font-weight="700" fill="#1a7f37">92.7 (0.1.50)</text>
+  <!-- spec4: 94.3 (308), 87.7 (287) -->
+  <text x="52" y="250" font-size="12" text-anchor="end" fill="#1f2328">spec 4</text>
+  <rect x="60" y="238" width="308" height="16" rx="3" fill="#0969da"/>
+  <text x="373" y="251" font-size="11.5" font-weight="700" fill="#0969da">94.3 (0.1.44.1)</text>
+  <rect x="60" y="258" width="287" height="16" rx="3" fill="#1a7f37"/>
+  <text x="352" y="271" font-size="11.5" font-weight="700" fill="#1a7f37">87.7 (0.1.50)</text>
+  <text x="60" y="300" font-size="12" fill="#57606a">单路代价：-4.7%（spec 2，热态+新内核）· spec 2 仍最优（接受率 67.6%）</text>
+
+  <!-- divider -->
+  <rect x="446" y="90" width="1" height="380" fill="#d0d7de"/>
+
+  <!-- ============ right panel: dual-lane unlock ============ -->
+  <text x="474" y="102" font-size="14" font-weight="700" fill="#1f2328">双并发 × 256K：守卫行为对比</text>
+
+  <!-- old engine card -->
+  <rect x="474" y="118" width="378" height="150" rx="10" fill="#fff8e6" stroke="#d4a72c" stroke-width="1.5"/>
+  <text x="492" y="146" font-size="13.5" font-weight="700" fill="#9a6700">引擎 0.1.44.1：强制降级 ✗</text>
+  <text x="492" y="170" font-size="12.5" fill="#1f2328">请求 batch2 × 262144</text>
+  <text x="492" y="192" font-size="13" font-weight="700" fill="#9a6700">→ 引擎内存守卫自动降级为 2 × 131072</text>
+  <text x="492" y="216" font-size="12.5" fill="#57606a">槽位会话 1.89 GiB/个（128K 大小）</text>
+  <text x="492" y="238" font-size="12.5" fill="#57606a">配置文件被写回 131072</text>
+  <text x="492" y="258" font-size="12.5" fill="#57606a">聚合 82.5 tok/s（spec 2，2×128K）</text>
+
+  <!-- new engine card -->
+  <rect x="474" y="282" width="378" height="176" rx="10" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+  <text x="492" y="310" font-size="13.5" font-weight="700" fill="#1a7f37">引擎 0.1.50：真 2 × 256K ✓</text>
+  <text x="492" y="334" font-size="12.5" fill="#1f2328">请求 batch2 × 262144</text>
+  <text x="492" y="356" font-size="13" font-weight="700" fill="#1a7f37">→ 满配运行，零降级</text>
+  <text x="492" y="380" font-size="12.5" fill="#1f2328">槽位会话 3.65 GiB/个（256K 大小，翻倍）</text>
+  <text x="492" y="402" font-size="12.5" fill="#1f2328">双灌验证：两路同时 243,469 tok</text>
+  <text x="492" y="424" font-size="13" font-weight="700" fill="#1a7f37">= 486,938 tokens 同时在线（旧引擎的 1.86 倍）</text>
+  <text x="492" y="446" font-size="12.5" fill="#57606a">聚合 67.0 tok/s（spec 2，2×256K）</text>
+
+  <rect x="28" y="468" width="824" height="1" fill="#d0d7de"/>
+  <text x="28" y="490" font-size="13" fill="#1f2328" font-weight="700">结论：0.1.50 用单路 4.7% 换来了 63.4 GB 内存机器上的真双路 256K —— 内存升级不再是前提。</text>
+</svg>
