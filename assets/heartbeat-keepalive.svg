@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 480" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="480" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">SSE keep-alive — 双并发下客户端 60 秒超时的根治</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">服务端流式输出静默 10 秒即发 ": keep-alive" 注释 · 所有客户端忽略内容但重置超时计时器 · 2026-10-28</text>
+
+  <!-- 三个静默窗口 -->
+  <text x="28" y="100" font-size="14" font-weight="700" fill="#1f2328">双并发下的三个静默窗口（超过客户端的 60 秒耐心）</text>
+  <rect x="28" y="114" width="264" height="70" rx="10" fill="#fff8e6" stroke="#d4a72c" stroke-width="1.5"/>
+  <text x="44" y="142" font-size="13.5" font-weight="700" fill="#9a6700">① 另一路的长文档读入</text>
+  <text x="44" y="166" font-size="12.5" fill="#1f2328">共享 prefill 带宽，解码停摆 50-90 s</text>
+  <rect x="308" y="114" width="264" height="70" rx="10" fill="#fff8e6" stroke="#d4a72c" stroke-width="1.5"/>
+  <text x="324" y="142" font-size="13.5" font-weight="700" fill="#9a6700">② 排队等槽位</text>
+  <text x="324" y="166" font-size="12.5" fill="#1f2328">两个槽都被占时，新请求分钟级静默</text>
+  <rect x="588" y="114" width="264" height="70" rx="10" fill="#fff8e6" stroke="#d4a72c" stroke-width="1.5"/>
+  <text x="604" y="142" font-size="13.5" font-weight="700" fill="#9a6700">③ 超长深度思考</text>
+  <text x="604" y="166" font-size="12.5" fill="#1f2328">xhigh 思考 6000+ token，60-120 s</text>
+
+  <!-- 修复机制 -->
+  <text x="28" y="228" font-size="14" font-weight="700" fill="#1f2328">修复：流式输出包一层心跳（OpenAI 与 Anthropic 两条 API 路径都覆盖）</text>
+  <rect x="28" y="242" width="824" height="54" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+  <text x="48" y="266" font-size="13" fill="#1f2328">源静默 <tspan font-weight="700">10 秒</tspan> → 服务端发 <tspan font-weight="700" fill="#1a7f37">": keep-alive"</tspan> SSE 注释行 →</text>
+  <text x="48" y="288" font-size="13" fill="#57606a">所有标准客户端忽略注释内容，但它们的超时计时器被重置——排队、长读入、长思考全覆盖</text>
+
+  <!-- 时间线对比 -->
+  <text x="28" y="330" font-size="14" font-weight="700" fill="#1f2328">时间线对比（另一路 13 万 token 读入期间，本路流式窗口的实测）</text>
+  <!-- 修复前 -->
+  <text x="28" y="362" font-size="12.5" font-weight="700" fill="#57606a">修复前</text>
+  <rect x="110" y="350" width="180" height="18" rx="4" fill="#539bf5"/>
+  <text x="296" y="363" font-size="11.5" fill="#57606a">数据…</text>
+  <rect x="290" y="350" width="330" height="18" rx="4" fill="#ffebe9" stroke="#cf222e" stroke-width="1"/>
+  <text x="455" y="363" font-size="12" font-weight="700" text-anchor="middle" fill="#cf222e">60 秒零字节 → 客户端断开 ✗</text>
+  <rect x="620" y="350" width="80" height="18" rx="4" fill="#8b949e"/>
+  <text x="706" y="363" font-size="11.5" fill="#57606a">断开后</text>
+  <!-- 修复后 -->
+  <text x="28" y="402" font-size="12.5" font-weight="700" fill="#57606a">修复后</text>
+  <rect x="110" y="390" width="120" height="18" rx="4" fill="#539bf5"/>
+  <rect x="230" y="390" width="26" height="18" rx="4" fill="#1a7f37"/>
+  <text x="243" y="403" font-size="11" font-weight="700" text-anchor="middle" fill="#ffffff">KA</text>
+  <rect x="256" y="390" width="150" height="18" rx="4" fill="#539bf5"/>
+  <rect x="406" y="390" width="26" height="18" rx="4" fill="#1a7f37"/>
+  <text x="419" y="403" font-size="11" font-weight="700" text-anchor="middle" fill="#ffffff">KA</text>
+  <rect x="432" y="390" width="368" height="18" rx="4" fill="#539bf5"/>
+  <text x="640" y="403" font-size="11.5" font-weight="700" fill="#0969da">持续有字节 ✓ 最大静默 1.4 s</text>
+
+  <text x="28" y="440" font-size="13" fill="#1f2328" font-weight="700">实测（另一路 130K token 读入期间）：keep-alive 到达 2 次 · 本路流最大静默间隔 1.4 s · 60 s 超时无法再触发</text>
+  <text x="28" y="462" font-size="12.5" fill="#57606a">客户端侧双保险：把流式超时从 60 s 调到 300 s（Cherry Studio / OneAPI 等均有此设置）</text>
+</svg>
