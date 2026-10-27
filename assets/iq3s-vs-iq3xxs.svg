@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="880" height="470" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1"/>
+  <text x="28" y="42" font-size="20" font-weight="700" fill="#1f2328">IQ3_S vs IQ3_XXS —— 同一台 5090 Laptop 上的正面对决</text>
+  <text x="28" y="66" font-size="13" fill="#57606a">两个都是现役：按"这一刻最看重什么"来选 · 引擎 0.1.50 · 2026-10-27 实测</text>
+
+  <!-- ============ left: IQ3_S ============ -->
+  <rect x="28" y="90" width="404" height="330" rx="12" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+  <text x="48" y="122" font-size="17" font-weight="700" fill="#1a7f37">IQ3_S · 3.44 bpw</text>
+  <text x="412" y="122" font-size="13" font-weight="700" text-anchor="end" fill="#1a7f37">精度优先</text>
+  <text x="48" y="150" font-size="13.5" font-weight="700" fill="#1f2328">🏆 质量王座：匹配完整 BF16 模型（官方基准）</text>
+  <text x="48" y="176" font-size="13" fill="#1f2328">单路解码　　97.7 tok/s（spec 2 · 256K）</text>
+  <text x="48" y="200" font-size="13" fill="#1f2328">双路并发　　2 × 256K 满上下文 ✓（0.1.50 引擎）</text>
+  <text x="48" y="224" font-size="13" fill="#1f2328">双路聚合　　67.0 tok/s（spec 2）</text>
+  <text x="48" y="248" font-size="13" fill="#1f2328">MTP 接受率　67.6-84.8%（随 prompt 变长而升）</text>
+  <text x="48" y="272" font-size="13" fill="#1f2328">内存锁定　　46.84 GB（63.4 GB 机器上余 6.1 GB）</text>
+  <rect x="48" y="290" width="364" height="1" fill="#1a7f37" opacity="0.3"/>
+  <text x="48" y="316" font-size="13" font-weight="700" fill="#1a7f37">代价</text>
+  <text x="48" y="338" font-size="12.5" fill="#1f2328">· 单路比 IQ3_XXS 慢 11%</text>
+  <text x="48" y="360" font-size="12.5" fill="#1f2328">· 内存余量紧（6.1 GB），RAM 硬件要求高</text>
+  <text x="48" y="382" font-size="12.5" fill="#1f2328">· 双并发时专家缓存缩水（KV 窗口吃显存）</text>
+  <rect x="48" y="394" width="364" height="1" fill="#1a7f37" opacity="0.3"/>
+  <text x="48" y="418" font-size="13" fill="#1f2328">👉 选它：<tspan font-weight="700">长项目持续开发、复杂推理、</tspan></text>
+  <text x="48" y="440" font-size="13" font-weight="700" fill="#1f2328">任何"答案质量比等待时间重要"的时刻</text>
+
+  <!-- ============ right: IQ3_XXS ============ -->
+  <rect x="448" y="90" width="404" height="330" rx="12" fill="#ddf4ff" stroke="#0969da" stroke-width="2"/>
+  <text x="468" y="122" font-size="17" font-weight="700" fill="#0969da">IQ3_XXS · 3.1 bpw</text>
+  <text x="832" y="122" font-size="13" font-weight="700" text-anchor="end" fill="#0969da">速度优先</text>
+  <text x="468" y="150" font-size="13.5" font-weight="700" fill="#1f2328">⚡ 速度王座：110.3 tok/s（全机最快）</text>
+  <text x="468" y="176" font-size="13" fill="#1f2328">单路解码　　110.3 tok/s（比 IQ3_S 快 13%）</text>
+  <text x="468" y="200" font-size="13" fill="#1f2328">三路并发　　3 × 256K（聚合 82 tok/s）</text>
+  <text x="468" y="224" font-size="13" fill="#1f2328">内存锁定　　40 GB（宽松，余 ~14 GB）</text>
+  <text x="468" y="248" font-size="13" fill="#1f2328">256K 上下文　原生宽松，无守卫风险</text>
+  <text x="468" y="272" font-size="13" fill="#1f2328">质量　　　　3-bit 档优秀（略逊 IQ3_S）</text>
+  <rect x="468" y="290" width="364" height="1" fill="#0969da" opacity="0.3"/>
+  <text x="468" y="316" font-size="13" font-weight="700" fill="#0969da">代价</text>
+  <text x="468" y="338" font-size="12.5" fill="#1f2328">· 质量比 IQ3_S 低一档（3.1 vs 3.44 bpw）</text>
+  <text x="468" y="360" font-size="12.5" fill="#1f2328">· 复杂推理的深度略逊</text>
+  <rect x="468" y="372" width="364" height="1" fill="#0969da" opacity="0.3"/>
+  <text x="468" y="396" font-size="13" fill="#1f2328">👉 选它：<tspan font-weight="700">多人大文档、多 Agent 高频并发、</tspan></text>
+  <text x="468" y="418" font-size="13" font-weight="700" fill="#1f2328">256K 长上下文的稳定多路服务</text>
+
+  <rect x="28" y="436" width="824" height="1" fill="#d0d7de"/>
+  <text x="28" y="458" font-size="13" fill="#1f2328" font-weight="700">一句话：IQ3_S 赢质量，IQ3_XXS 赢速度与并发余量——两个配置文件都在仓库里，改一行启动参数即切换。</text>
+</svg>
