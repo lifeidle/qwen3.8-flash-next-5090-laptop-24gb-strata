@@ -19,7 +19,7 @@
   <text x="28" y="228" font-size="14" font-weight="700" fill="#1f2328">修复：流式输出包一层心跳（OpenAI 与 Anthropic 两条 API 路径都覆盖）</text>
   <rect x="28" y="242" width="824" height="54" rx="10" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
   <text x="48" y="266" font-size="13" fill="#1f2328">源静默 <tspan font-weight="700">10 秒</tspan> → 服务端发 <tspan font-weight="700" fill="#1a7f37">": keep-alive"</tspan> SSE 注释行 →</text>
-  <text x="48" y="288" font-size="13" fill="#57606a">所有标准客户端忽略注释内容，但它们的超时计时器被重置——排队、长读入、长思考全覆盖</text>
+  <text x="48" y="288" font-size="13" fill="#57606a">数据帧让任何计时器实现（按字节/按行/按事件）都重置——注释行对只认 data 事件的客户端无效</text>
 
   <!-- 时间线对比 -->
   <text x="28" y="330" font-size="14" font-weight="700" fill="#1f2328">时间线对比（另一路 13 万 token 读入期间，本路流式窗口的实测）</text>
