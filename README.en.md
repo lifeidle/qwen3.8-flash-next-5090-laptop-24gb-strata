@@ -15,9 +15,11 @@
 
 ---
 
-## 🏆 Active config (updated 2026-10-20): IQ3_S — the highest-precision tier, proven today
+## 🏆 Active config (updated 2026-10-27): IQ3_S · dual-lane 256K · engine 0.1.50
 
 ![Five-quant lineup](./assets/quant-comparison-2026.svg)
+
+![Engine 0.1.50 dual-lane unlock](./assets/engine-0150-dual-unlock.svg)
 
 **IQ3_S (3.44 bpw) passed on-machine verification today**: it matches the full BF16 model on
 published tests, runs the full 256K context, and decodes at 97.7 tok/s (MTP spec 2).
@@ -28,7 +30,7 @@ One-line trade vs IQ3_XXS: **IQ3_S wins quality; IQ3_XXS wins speed and concurre
 | Quality | **matches the full BF16 model** | excellent 3-bit |
 | Single-stream | 97.7 tok/s | **110.3 tok/s** |
 | Context | 256K (6.1 GB RAM margin — tight) | 256K (comfortable ~14 GB) |
-| Concurrency | batch2 → 2×128K (engine guard downgrade) | **batch3 × 256K (82 tok/s aggregate)** |
+| Concurrency | **batch2 × 256K real dual-lane (unlocked on 0.1.50 — 487K tokens in flight, measured)** | batch3 × 256K (82 tok/s aggregate, measured at 2×128K) |
 | RAM locked | 46.84 GB (tight) | 40 GB (comfortable) |
 | **Pick it for** | **long-project precision work, hard reasoning** | **multi-user long docs, concurrent agents** |
 
@@ -55,6 +57,22 @@ One-line trade vs IQ3_XXS: **IQ3_S wins quality; IQ3_XXS wins speed and concurre
 4. **256K context is nearly free**: with KV streaming, 65K/128K/256K cost the same; verified stable on 64 GB RAM. Vision coexists with 256K (≤1,024 tokens/image — 250+ images per conversation)
 
 ![spec_min_p sweep](./assets/spec-minp-sweep.svg)
+
+### 🆕 2026-10-27 · Engine 0.1.50: dual-lane 256K full-context unlocked + fill-verified
+
+- **Engine upgraded 0.1.44.1 → 0.1.50** (0.2.6 package, engine-file swap): all previous flags
+  accepted as-is; Flash-Next behavior safe (0.1.45 identity tests: byte-identical vs 0.1.44.1)
+- **Dual-lane 256K unlocked**: batch2 × 262144 was auto-downgraded to 2×128K by the memory
+  guard on 0.1.44.1 — **0.1.50 runs it at full config with zero downgrade** (slot sessions
+  3.65 GiB each). No 96 GB RAM upgrade needed anymore
+- **Fill-verified**: two lanes simultaneously at 243,469 tokens = **486,938 tokens in flight**
+  (1.86× the old downgrade line), concurrent prefill 2105-2109 tok/s per lane, 52 万 chars
+  ingested in 26.7 s
+- **Single-lane cost**: -4.7% (93.1 vs 97.7, spec 2) — a fair price for dual 256K
+- **Dual MTP sweep**: spec 2 still optimal (67.4 aggregate / 64.6%), spec 3/4 trail
+- 📗 Full log (Chinese) → [docs/2026-10-27-engine-0150-dual-256k.zh.md](./docs/2026-10-27-engine-0150-dual-256k.zh.md)
+- 📊 Charts: [upgrade & unlock](./assets/engine-0150-dual-unlock.svg) · [IQ3_S vs IQ3_XXS](./assets/iq3s-vs-iq3xxs.svg) · [fill verification](./assets/dual-context-fill.svg)
+
 
 ### 🆕 2026-10-20 · IQ3_S verified on the machine — the rejected "quality king" is back, 256K full context
 
